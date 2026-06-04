@@ -1,15 +1,16 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QTextEdit, QVBoxLayout, QLabel, QFormLayout, QLineEdit, QGroupBox, QScrollArea, QPushButton, QLineEdit
+from PySide6.QtWidgets import *
+from Sub_Classes.neighbours_group_box import NeighboursGroupBox
+from Sub_Classes.address_family_group_box import AddressFamilyGroupBox
 
 class gui_window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Solius Config Helper')
-        self.resize(1300, 700)
+        self.resize(1300, 400)
         self.neighbours = []
         self.init_left_pane()
         self.init_main_layout()
         self.init_central_widget()
-    
     
     def init_central_widget(self):
          # creating central widget
@@ -36,59 +37,39 @@ class gui_window(QMainWindow):
         self.leftVerticalLayout.addWidget(self.addressFamilyBox, stretch=2)
 
     def init_routerAS_box(self):
-        # creating Widget 1 in the left layout
+        # creating the widget/formlayout for the top pane in the leaf pane
         self.routerAs =  QFormLayout()
         textbox=QLineEdit()
         textbox.setMaximumWidth(120)
+        generate_btn = QPushButton("Generate Configs")
+        generate_btn.clicked.connect(self.geneate_configs_connector)
+        self.routerAs.addRow(generate_btn)
         self.routerAs.addRow("router bgp", textbox)
 
     def init_neighbourships_box(self):
-        # creating Widget 2 in the left layout
-        self.neighbourshipBox = QGroupBox(title="Define Neighbourships")
-        self.neighboursBoxVerticalLayout = QVBoxLayout()
-        self.neighbourshipBox.setLayout(self.neighboursBoxVerticalLayout)
-        
-        # building the innermost widget fully
-        self.scrollAreaWidgetLayout = QVBoxLayout()
-        self.scrollAreaWidgetLayout.addWidget(self.neighbour_defintion())
-        self.scrollAreaWidgetLayout.addWidget(self.neighbour_defintion())
-        self.scrollAreaWidgetLayout.addStretch()  # makes it absorb the left out space 
-        ScrollAreaWidget = QWidget()
-        ScrollAreaWidget.setLayout(self.scrollAreaWidgetLayout)
-        # building the next top layer
-        ScrollArea = QScrollArea()
-        ScrollArea.setWidget(ScrollAreaWidget)
-        ScrollArea.setWidgetResizable(True)
-        # adding scroll area to group box layout
-        self.neighboursBoxVerticalLayout.addWidget(ScrollArea)
-        self.addNeigbourshipsButton = QPushButton("Add Neighbourships")
-        self.addNeigbourshipsButton.clicked.connect(lambda: self.scrollAreaWidgetLayout.addWidget(self.neighbour_defintion()))
-        self.neighboursBoxVerticalLayout.addWidget(self.addNeigbourshipsButton) 
+        # creating the widget/formlayout for the middle pane in the leaf pane
+        self.neighbourshipBox = NeighboursGroupBox(self.neighbours)
 
     def init_addressFamily_box(self):
-        # creating Widget 3 in the left layout
-        self.addressFamilyBox = QGroupBox(title="Configure Address-Families")
+         # creating the widget/formlayout for the bottom pane in the leaf pane
+        self.addressFamilyBox = AddressFamilyGroupBox()
 
-    def neighbour_defintion(self):
-        neighbour = QGroupBox()
-        layout = QVBoxLayout()
-        neighbour.setLayout(layout)
-        # defining neighbour ip
-        neighbour_ip = QLineEdit()
-        neighbour_ip.setPlaceholderText("Enter neighbour address. eg: 10.0.0.1")
-        neighbour_ip_form = QFormLayout()
-        neighbour_ip_form.addRow("neighbour:", neighbour_ip)
-        # defining remote as
-        neighbour_as = QLineEdit()
-        neighbour_as.setPlaceholderText("Enter remote-as")
-        neighbour_as_form = QFormLayout()
-        neighbour_as_form.addRow("remote-as:", neighbour_as)
+    def geneate_configs_connector(self):
+        pass
+        # will continue tomorrow
+        # for X in self.neighbours:
+        #     print(X)
+        #     route_maps=X.findChildren(QLineEdit, "RouteMapName")
 
-        layout.addLayout(neighbour_ip_form)
-        layout.addLayout(neighbour_as_form)
-        self.neighbours.append(neighbour)
-        return neighbour
+        #     IOList = X.findChildren(QComboBox, "IO")
+        #     a= dict(zip(route_maps, IOList))
+        #     for key, val in a.items():
+        #         print(key.text(), val.currentText())
+
+
         
+        
+
 
 
 
