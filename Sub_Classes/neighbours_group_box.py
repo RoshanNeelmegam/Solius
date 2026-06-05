@@ -50,6 +50,14 @@ class NeighboursGroupBox(QGroupBox):
         address_family_dropdown.setPlaceholderText("Select address-family")
         address_family_dropdown.addItems(["ipv4", "vpnv4", "evpn"])
         neighbour_form.addRow("address-family:", address_family_dropdown)        
+        # defining update-source group
+        neighbour_update_source = QLineEdit()
+        neighbour_update_source.setObjectName("NUS")
+        neighbour_update_source.setPlaceholderText("Optional")
+        neighbour_form.addRow("update-source:", neighbour_update_source)
+        # defining eBGP-multihop option
+        eBGP_multihop = QCheckBox("eBGP multihop (set to 10 as default)")
+        neighbour_form.addRow(eBGP_multihop)
         # defining a horizontal layout that contains add route-map and delete option
         options = QHBoxLayout()
         add_route_map_btn = QPushButton("Add Route-Map")
@@ -84,5 +92,3 @@ class NeighboursGroupBox(QGroupBox):
         self.scrollAreaWidgetLayout.removeWidget(neighbour) # removing the widget from the layout
         neighbour.deleteLater() # deleting the widget as well
         return None
-
-        

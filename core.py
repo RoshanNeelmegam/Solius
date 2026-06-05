@@ -62,7 +62,7 @@ class gui_window(QMainWindow):
         self.bottom_pane.addWidget(self.vrfDefinitionBox)
 
     def generate_configs_connector(self):
-        pass
+        self.setCentralWidget(QLabel("test"))
         # will continue tomorrow
         # for X in self.neighbours:
         #     print(X)
