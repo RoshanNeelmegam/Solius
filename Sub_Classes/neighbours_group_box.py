@@ -57,6 +57,7 @@ class NeighboursGroupBox(QGroupBox):
         neighbour_form.addRow("update-source:", neighbour_update_source)
         # defining eBGP-multihop option
         eBGP_multihop = QCheckBox("eBGP multihop (set to 10 as default)")
+        eBGP_multihop.setObjectName("NEMP")
         neighbour_form.addRow(eBGP_multihop)
         # defining a horizontal layout that contains add route-map and delete option
         options = QHBoxLayout()
