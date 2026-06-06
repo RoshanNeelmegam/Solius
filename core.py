@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import *
 from jinja2 import Template
+import re
 from Sub_Classes.neighbours_group_box import NeighboursGroupBox
 from Sub_Classes.address_family_group_box import AddressFamilyGroupBox
 from Sub_Classes.vrfs_group_box import VrfsGroupBox 
-from templates.arista.mpBGP.arista_mp_bgp_neighbourship import neighbourship_template
+from templates.arista.mpBGP.arista_mp_bgp_neighbourship import neighbourship_template, address_family_template
 
 
 class gui_window(QMainWindow):
@@ -66,6 +67,9 @@ class gui_window(QMainWindow):
         self.bottom_pane.addWidget(self.vrfDefinitionBox)
 
     def generate_configs_connector(self):
+        ntemplate = Template(neighbourship_template, trim_blocks=True)
+        atemplate = Template(address_family_template, trim_blocks=True)
+        bgp_config_dict = {}
         output = ''
         for neighbour in self.neighbours_list:
             neighbour_ip = neighbour.findChild(QLineEdit, "NIP").text()
@@ -73,17 +77,30 @@ class gui_window(QMainWindow):
             neighbour_peer_group = neighbour.findChild(QLineEdit, "NPG").text()
             neighbour_address_family = neighbour.findChild(QComboBox, "NAF").currentText()
             neighbour_update_source = neighbour.findChild(QLineEdit, "NUS").text()
-            neighbour_ebgp_multihop = neighbour.findChild(QCheckBox, "NEMP").isChecked()
-            ntemplate = Template(neighbourship_template, trim_blocks=True)
-            output += ntemplate.render(neighbour_ip=neighbour_ip, peer_group=neighbour_peer_group, neighbour_remote_as=neighbour_remote_as, neighbour_address_family=neighbour_address_family)
-            self.text_space.clear()
-            self.text_space.setPlainText(output)
-            for route_map_entity in self.neighbours_list:
-                route_map = route_map_entity.findChildren(QLineEdit, "RouteMapName")
-                inbound_outbound = route_map_entity.findChildren(QComboBox, "IO")
-                rm_dict = dict(zip(route_map, inbound_outbound))
-                for key, val in rm_dict.items():
-                    print(key.text(), val.currentText())
+            neighbour_ebgp_multihop = neighbour.findChild(QCheckBox, "NEMP").isChecked()   
+
+            route_map = neighbour.findChildren(QLineEdit, "RouteMapName")
+            route_map_val = [item.text() for item in route_map]
+            inbound_outbound = neighbour.findChildren(QComboBox, "IO")
+            inbound_outbound_val = [item.currentText() for item in inbound_outbound]
+            rm_dict = dict(zip(route_map_val, inbound_outbound_val))
+                # for key, val in rm_dict.items():
+                #     print(key.text(), val.currentText())
+            bgp_config_dict[str(neighbour)] = {
+                "neighbour_ip": neighbour_ip,
+                "neighbour_remote_as": neighbour_remote_as,
+                "neighbour_peer_group": neighbour_peer_group,
+                "neighbour_address_family": neighbour_address_family,
+                "neighbour_update_source": neighbour_update_source,
+                "is_ebgp_mulithop_set": neighbour_ebgp_multihop,
+                "neighbour_route_maps": rm_dict
+            }
+        
+        output += ntemplate.render(bgp_config_dict=bgp_config_dict)
+        output += atemplate.render(bgp_config_dict=bgp_config_dict)
+        nop = "\n".join(line for line in output.splitlines() if line.strip())
+        self.text_space.clear()
+        self.text_space.setPlainText(nop)
 
 
         
