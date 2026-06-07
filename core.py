@@ -47,12 +47,13 @@ class gui_window(QMainWindow):
     def init_first_pane(self):
         # creating the widget/formlayout for the top part in the leaf pane
         self.routerAs =  QFormLayout()
-        textbox=QLineEdit()
-        textbox.setMaximumWidth(120)
+        self.router_as_textbox=QLineEdit()
+        self.router_as_textbox.setMaximumWidth(120)
+        self.router_as_textbox.setObjectName("RAS")
         generate_btn = QPushButton("Generate Configs")
         generate_btn.clicked.connect(self.generate_configs_connector)
         self.routerAs.addRow(generate_btn)
-        self.routerAs.addRow("router bgp", textbox)
+        self.routerAs.addRow("router bgp", self.router_as_textbox)
 
     def init_second_pane(self):
         # creating the widget/formlayout for the middle part in the left pane
@@ -71,6 +72,10 @@ class gui_window(QMainWindow):
         atemplate = Template(address_family_template, trim_blocks=True)
         bgp_config_dict = {}
         output = ''
+
+        bgp_as = self.router_as_textbox.text()
+        output += Template("router bgp {{ bgp_as }}\n    no bgp default ipv4-unicast\n    maximum-paths 4 ecmp 4").render(bgp_as=bgp_as)
+
         for neighbour in self.neighbours_list:
             neighbour_ip = neighbour.findChild(QLineEdit, "NIP").text()
             neighbour_remote_as = neighbour.findChild(QLineEdit, "NAS").text()
@@ -78,6 +83,7 @@ class gui_window(QMainWindow):
             neighbour_address_family = neighbour.findChild(QComboBox, "NAF").currentText()
             neighbour_update_source = neighbour.findChild(QLineEdit, "NUS").text()
             neighbour_ebgp_multihop = neighbour.findChild(QCheckBox, "NEMP").isChecked()   
+            neighbour_next_hop_unchanged = neighbour.findChild(QCheckBox, "NNHU").isChecked() 
 
             route_map = neighbour.findChildren(QLineEdit, "RouteMapName")
             route_map_val = [item.text() for item in route_map]
@@ -93,6 +99,7 @@ class gui_window(QMainWindow):
                 "neighbour_address_family": neighbour_address_family,
                 "neighbour_update_source": neighbour_update_source,
                 "is_ebgp_mulithop_set": neighbour_ebgp_multihop,
+                "is_next_hop_unchanged_set": neighbour_next_hop_unchanged,
                 "neighbour_route_maps": rm_dict
             }
         

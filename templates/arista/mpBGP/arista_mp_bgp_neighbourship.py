@@ -16,6 +16,12 @@ neighbourship_template = """
 {% if neighbour_val["is_ebgp_mulithop_set"] == True %}
     neighbour {{ neighbour_val["neighbour_ip"] }} ebgp-multihop 10
 {% endif %}
+{% if neighbour_val["is_next_hop_unchanged_set"] == True %}
+    neighbour {{ neighbour_val["neighbour_ip"] }} next-hop-unchanged
+{% endif %}
+{% if neighbour_val["neighbour_address_family"] != "ipv4" %}
+    neighbour {{ neighbour_val["neighbour_ip"] }} send-community
+{% endif %}
 {% if neighbour_val["neighbour_route_maps"] %}
 {% for key, val in neighbour_val["neighbour_route_maps"].items() %}
     neighbour {{ neighbour_val["neighbour_ip"] }} route-map {{ key }} {{ val }}

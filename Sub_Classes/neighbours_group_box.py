@@ -59,6 +59,11 @@ class NeighboursGroupBox(QGroupBox):
         eBGP_multihop = QCheckBox("eBGP multihop (set to 10 as default)")
         eBGP_multihop.setObjectName("NEMP")
         neighbour_form.addRow(eBGP_multihop)
+        # defining next-hop-unchanged option
+        next_hop_unchanged = QCheckBox("next hop unchanged (recommended on spines in evpn/vpnv4 setup)")
+        next_hop_unchanged.setObjectName("NNHU")
+        neighbour_form.addRow(next_hop_unchanged)
+        ## can define more fields in the future if I need them ##
         # defining a horizontal layout that contains add route-map and delete option
         options = QHBoxLayout()
         add_route_map_btn = QPushButton("Add Route-Map")
